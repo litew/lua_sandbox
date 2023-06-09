@@ -72,8 +72,9 @@ extern "C"
 {
 #endif
 
-#include "../lauxlib.h"
-#include "../lua.h"
+#include <luajit-2.1/lua.h>
+#include <luajit-2.1/lualib.h>
+#include <luajit-2.1/lauxlib.h>
 
 LSB_HEKA_EXPORT extern lsb_err_id LSB_ERR_HEKA_INPUT;
 

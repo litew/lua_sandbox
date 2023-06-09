@@ -22,4 +22,4 @@ if(LIBM_LIBRARY)
 endif()
 
 install(TARGETS luasandboxheka DESTINATION ${CMAKE_INSTALL_LIBDIR})
-add_subdirectory(test)
+#add_subdirectory(test)

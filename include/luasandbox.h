@@ -69,7 +69,7 @@ extern "C"
 {
 #endif
 
-#include "luasandbox/lua.h"
+#include <luajit-2.1/lua.h>
 
 LSB_EXPORT extern lsb_err_id LSB_ERR_INIT;
 LSB_EXPORT extern lsb_err_id LSB_ERR_LUA;

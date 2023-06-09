@@ -10,7 +10,7 @@
 #define luasandbox_impl_h_
 
 #include "luasandbox.h"
-#include "luasandbox/lua.h"
+#include <luajit-2.1/lua.h>
 #include "luasandbox/util/output_buffer.h"
 
 struct lsb_lua_sandbox {

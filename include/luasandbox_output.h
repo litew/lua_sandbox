@@ -18,7 +18,7 @@ extern "C"
 {
 #endif
 
-#include "luasandbox/lua.h"
+#include <luajit-2.1/lua.h>
 
 /**
  * Add a output function to the environment table. The environment table must be

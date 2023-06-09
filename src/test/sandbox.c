@@ -13,8 +13,8 @@
 #include <time.h>
 
 #include "luasandbox.h"
-#include "luasandbox/lauxlib.h"
-#include "luasandbox/lua.h"
+#include <luajit-2.1/lauxlib.h>
+#include <luajit-2.1/lua.h>
 #include "luasandbox_output.h"
 #include "../luasandbox_defines.h"
 

@@ -17,50 +17,18 @@ else()
 	)
 endif()
 
-set(LUA_SRC
-lua/lapi.c
-lua/lauxlib.c
-lua/lbaselib.c
-lua/lcode.c
-lua/ldblib.c
-lua/ldebug.c
-lua/ldo.c
-lua/ldump.c
-lua/lfunc.c 
-lua/lgc.c
-lua/linit.c
-lua/liolib.c
-lua/llex.c
-lua/lmathlib.c
-lua/lmem.c
-lua/loadlib.c 
-lua/lobject.c
-lua/lopcodes.c
-lua/loslib.c
-lua/lparser.c
-lua/lstate.c
-lua/lstring.c
-lua/lstrlib.c
-lua/ltable.c
-lua/ltablib.c
-lua/ltm.c
-lua/lundump.c
-lua/lvm.c
-lua/lzio.c
-)
-
 set(LUA_SANDBOX_SRC
 luasandbox.c
 luasandbox_output.c
 luasandbox_serialize.c
 )
 
-add_library(luasandbox SHARED ${LUA_SANDBOX_SRC} ${LUA_SRC})
+add_library(luasandbox SHARED ${LUA_SANDBOX_SRC})
 set_target_properties(luasandbox PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION 0)
-target_link_libraries(luasandbox luasandboxutil ${CMAKE_DL_LIBS})
-if(LIBM_LIBRARY)
-  target_link_libraries(luasandbox ${LIBM_LIBRARY})
-endif()
+target_link_libraries(luasandbox luasandboxutil luajit-5.1 m dl ${CMAKE_DL_LIBS} c)
+#if(LIBM_LIBRARY)
+#  target_link_libraries(luasandbox ${LIBM_LIBRARY})
+#endif()
 install(TARGETS luasandbox DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 add_subdirectory(util)

@@ -32,7 +32,7 @@
 extern "C"
 {
 #endif
-#include "../lua.h"
+#include <luajit-2.1/lua.h>
 
 /**
  * Global variable to store the test output

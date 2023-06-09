@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "luasandbox/lauxlib.h"
+#include <luajit-2.1/lauxlib.h>
 #include "luasandbox_impl.h"
 #include "luasandbox_serialize.h"
 

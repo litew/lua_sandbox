@@ -17,7 +17,7 @@
 // need access to the impl
 
 #include "luasandbox.h"
-#include "luasandbox/lauxlib.h"
+#include <luajit-2.1/lauxlib.h>
 #include "luasandbox_output.h"
 #include "sandbox_impl.h"
 #include "luasandbox/util/heka_message.h"

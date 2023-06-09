@@ -10,9 +10,9 @@
 #include <string.h>
 
 #include "../luasandbox_defines.h"
-#include "lauxlib.h"
-#include "lua.h"
-#include "lualib.h"
+#include <luajit-2.1/lauxlib.h>
+#include <luajit-2.1/lua.h>
+#include <luajit-2.1/lualib.h>
 #include "luasandbox/heka/sandbox.h"
 #include "luasandbox/util/heka_message.h"
 #include "luasandbox_output.h"
@@ -140,7 +140,7 @@ static int zc_tostring(lua_State *lua)
 }
 
 
-static const struct luaL_reg zclib_m[] =
+static const struct luaL_Reg zclib_m[] =
 {
   { "__tostring", zc_tostring },
   { NULL, NULL }

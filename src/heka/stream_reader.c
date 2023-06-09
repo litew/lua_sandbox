@@ -13,7 +13,7 @@
 
 #include "luasandbox/heka/sandbox.h"
 #include "message_impl.h"
-#include "luasandbox/lauxlib.h"
+#include <luajit-2.1/lauxlib.h>
 
 static heka_stream_reader* check_hsr(lua_State *lua, int args)
 {
@@ -161,7 +161,7 @@ static int hsr_gc(lua_State *lua)
 }
 
 
-static const struct luaL_reg heka_stream_readerlib_m[] =
+static const struct luaL_Reg heka_stream_readerlib_m[] =
 {
   { "find_message", hsr_find_message },
   { "decode_message", hsr_decode_message },

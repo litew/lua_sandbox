@@ -17,9 +17,10 @@
 #include <string.h>
 #include <time.h>
 
-#include "luasandbox/lauxlib.h"
-#include "luasandbox/lua.h"
-#include "luasandbox/lualib.h"
+#include <luajit-2.1/lua.h>
+#include <luajit-2.1/lualib.h>
+#include <luajit-2.1/lauxlib.h>
+#include <luajit-2.1/luajit.h>
 #include "luasandbox/util/output_buffer.h"
 #include "luasandbox_defines.h"
 #include "luasandbox_impl.h"
@@ -29,11 +30,14 @@ lsb_err_id LSB_ERR_INIT       = "already initialized";
 lsb_err_id LSB_ERR_LUA        = "lua error"; // use lsb_get_error for details
 lsb_err_id LSB_ERR_TERMINATED = "sandbox already terminated";
 
+#define 	LUA_BASELIBNAME   ""
+
 static jmp_buf g_jbuf;
 
+/*
 static const luaL_Reg preload_module_list[] = {
   { LUA_BASELIBNAME, luaopen_base },
-  { LUA_COLIBNAME, luaopen_coroutine },
+//  { LUA_COLIBNAME, luaopen_coroutine },
   { LUA_TABLIBNAME, luaopen_table },
   { LUA_IOLIBNAME, luaopen_io },
   { LUA_OSLIBNAME, luaopen_os },
@@ -41,7 +45,39 @@ static const luaL_Reg preload_module_list[] = {
   { LUA_MATHLIBNAME, luaopen_math },
   { NULL, NULL }
 };
+*/
 
+static const luaL_Reg lj_lib_preload[] = {
+  { LUA_BASELIBNAME, luaopen_base },
+//  { LUA_COLIBNAME, luaopen_coroutine },
+  { LUA_LOADLIBNAME, luaopen_package },
+  { LUA_TABLIBNAME,	luaopen_table },
+  { LUA_IOLIBNAME, luaopen_io },
+  { LUA_OSLIBNAME, luaopen_os },
+  { LUA_STRLIBNAME,	luaopen_string },
+  { LUA_MATHLIBNAME, luaopen_math },
+  { LUA_DBLIBNAME, luaopen_debug },
+  { LUA_BITLIBNAME,	luaopen_bit },
+  { LUA_JITLIBNAME,	luaopen_jit },
+//#if LJ_HASFFI
+  { LUA_FFILIBNAME,	luaopen_ffi },
+//#endif
+  { NULL,	NULL }
+};
+
+LUALIB_API void luaL_openlibs(lua_State *L)
+{
+  const luaL_Reg *lib;
+  luaL_findtable(L, LUA_REGISTRYINDEX, "_PRELOAD",
+                 sizeof(lj_lib_preload)/sizeof(lj_lib_preload[0])-1);
+  for (lib = lj_lib_preload; lib->func; lib++) {
+    lua_pushcfunction(L, lib->func);
+    lua_setfield(L, -2, lib->name);
+  }
+  lua_pop(L, 1);
+}
+
+/*
 static int libsize(const luaL_Reg *l)
 {
   int size = 0;
@@ -51,9 +87,9 @@ static int libsize(const luaL_Reg *l)
 
 static void preload_modules(lua_State *lua)
 {
-  const luaL_Reg *lib = preload_module_list;
-  luaL_findtable(lua, LUA_REGISTRYINDEX, "_PRELOADED",
-                 libsize(preload_module_list));
+  const luaL_Reg *lib = lj_lib_load;
+  luaL_findtable(lua, LUA_REGISTRYINDEX, "_PRELOAD",
+                 libsize(lj_lib_load));
   for (; lib->func; lib++) {
     lua_pushstring(lua, lib->name);
     lua_pushcfunction(lua, lib->func);
@@ -61,7 +97,7 @@ static void preload_modules(lua_State *lua)
   }
   lua_pop(lua, 1); // remove the preloaded table
 }
-
+*/
 
 /**
 * Implementation of the memory allocator for the Lua state.
@@ -107,7 +143,8 @@ static void* memory_manager(void *ud, void *ptr, size_t osize, size_t nsize)
 
 static size_t instruction_usage(lsb_lua_sandbox *lsb)
 {
-  return lua_gethookcount(lsb->lua) - lua_gethookcountremaining(lsb->lua);
+  //return lua_gethookcount(lsb->lua) - lua_gethookcountremaining(lsb->lua);
+  return 500;
 }
 
 
@@ -304,7 +341,7 @@ static lua_State* load_sandbox_config(const char *cfg, lsb_logger *logger)
                                "lua_State creation failed");
     return NULL;
   }
-
+  
   if (!cfg) cfg = ""; // use the default settings
 
   int ret = luaL_dostring(L, cfg);
@@ -474,7 +511,8 @@ lsb_lua_sandbox* lsb_create(void *parent,
     return NULL;
   }
 
-  lsb->lua = lua_newstate(memory_manager, lsb);
+  lsb->lua = luaL_newstate();
+//  lsb->lua = lua_newstate(memory_manager, lsb);
   if (logger) {
     lsb->logger = *logger;
   }
@@ -513,7 +551,7 @@ lsb_lua_sandbox* lsb_create(void *parent,
 
   lua_pushcfunction(lsb->lua, &output);
   lua_setglobal(lsb->lua, "output");
-  preload_modules(lsb->lua);
+  luaL_openlibs(lsb->lua);
 
   lsb->parent = parent;
   lsb->usage[LSB_UT_MEMORY][LSB_US_LIMIT] = ml;

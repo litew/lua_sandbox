@@ -16,7 +16,8 @@
 #include "../luasandbox_defines.h"
 #include "../luasandbox_impl.h"
 #include "luasandbox.h"
-#include "luasandbox/lualib.h"
+
+#include <luajit-2.1/lualib.h>
 #include "luasandbox/heka/stream_reader.h"
 #include "luasandbox/util/heka_message_matcher.h"
 #include "luasandbox/util/protobuf.h"
@@ -221,9 +222,10 @@ static int inject_message_input(lua_State *lua)
                       im_func_name);
   case LSB_HEKA_IM_ERROR:
     // fall through
+    return luaL_error(lua, "%s() failed: HEKA_IM_ERROR", im_func_name);
   default:
-    return luaL_error(lua, "%s() failed: rejected by the callback rv: %d",
-                      im_func_name, rv);
+    return luaL_error(lua, "%s() failed1111: rejected by the callback rv: %d\n =>> %s",
+                      im_func_name, rv, output.s);
   }
   if (output.s) {
     ++hsb->stats.im_cnt;
@@ -942,7 +944,7 @@ lsb_heka_sandbox* lsb_heka_create_output_im(void *parent,
   }
 
   // start io.write override with zero copy functionality
-  lua_getfield(lua, LUA_REGISTRYINDEX, "_PRELOADED");
+  lua_getfield(lua, LUA_REGISTRYINDEX, "_PRELOAD");
   lua_pushstring(lua, LUA_IOLIBNAME);
   lua_pushcfunction(lua, zc_luaopen_io);
   lua_rawset(lua, -3);
