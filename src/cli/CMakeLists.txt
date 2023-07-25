@@ -5,6 +5,10 @@
 add_executable(lsb_heka_cat lsb_heka_cat)
 target_link_libraries(lsb_heka_cat luasandboxutil)
 
+set(CMAKE_SKIP_BUILD_RPATH FALSE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+list( APPEND CMAKE_INSTALL_RPATH "\$ORIGIN/../lib64" )
+
 if(LIBM_LIBRARY)
   target_link_libraries(lsb_heka_cat ${LIBM_LIBRARY})
 endif()
